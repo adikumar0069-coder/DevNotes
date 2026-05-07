@@ -10,10 +10,23 @@
     <div id="signup-container">
         <p>Create a new account</p>
         <div id="user-inputs">
-            <input type="text" id="email" placeholder="Your Email" class="user-inputs">
-            <input type="text" id="phone-no" placeholder="Your Phone No." class="user-inputs">
-            <input type="text" id="username" placeholder="Username" class="user-inputs">
-            <input type="text" id="user-pass" placeholder="Password" class="user-inputs">
+            <div>
+                <input type="text" id="email" placeholder="Your Email" class="user-inputs">
+                <p class="cred_fedback" id="email_feedback"></p>
+            </div>
+            <div>
+                <input type="text" id="phone-no" placeholder="Your Phone No." class="user-inputs">
+                <p class="cred_fedback" id="phone_feedback"></p>
+            </div>
+            <div>
+                <input type="text" id="username" placeholder="Username" class="user-inputs">
+                <p class="cred_fedback" id="username_feedback"></p>
+            </div>
+            <div>
+                <input type="text" id="user-pass" placeholder="Password" class="user-inputs">
+                <p class="cred_fedback" id="pass_feedback"></p>
+            </div>
+            
         </div>
         <div id="signup-login-btns">
             <button class="signup-login-btns" id="signup-btn">Sign up</button>
