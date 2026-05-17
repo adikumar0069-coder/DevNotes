@@ -1,0 +1,24 @@
+body{
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 2.5fr 9fr;
+    grid-template-rows: 2fr 14fr ;
+    grid-template-areas: 
+    "side_nav_bar top_nav_bar"
+    "side_nav_bar main_contant";
+
+}
+
+#top_nav_bar{
+    background-color: aqua;
+    display: grid;
+    
+}
+#side_nav_bar{
+    background-color: blue;
+}
+#main_contant{
+    background-color: brown;
+}

@@ -27,11 +27,11 @@ const create_token = (username)=>{
 
 const protect_route = async (req, res, next) => {
     try{
+
+        console.log("protected route is called")
         let token = req.cookies.token;
 
         if(!token){
-
-            res.redirect("/signup")
             
             return res.json({
                 massage: "token not found"
@@ -41,6 +41,8 @@ const protect_route = async (req, res, next) => {
         const decode = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = decode;
+
+        next()
     }
     catch(err){
         console.log(err)
@@ -50,9 +52,6 @@ const protect_route = async (req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-let phone_no_T_F = false;
-
-
 
 app.get('/', protect_route, (req, res)=>{
 
@@ -60,12 +59,14 @@ app.get('/', protect_route, (req, res)=>{
         res.sendFile(path.join(__dirname, "Static", "index.html"))
     }
     else{
-        res.redirect("/signup")
+        res.json({
+            massage: "token not found or invaild token"
+        })
     }
 })
 app.get('/signup', (req,res)=>{
     res.sendFile(path.join(__dirname,'Static', 'signup.html'))
-    res.sendFile(path.join(__dirname,"Static", "assets", "signup-mwbczkIQ.js"))
+    
 })
 
 app.get('/login', (req,res)=>{
@@ -150,14 +151,14 @@ app.post("/api/userdata", async (req,res)=>{
 
       let hash_pass = await bcrypt.hash(user_pass, 10);
     
+      let phone_no_availibility = await check_phone_no(user_phone_no);
 
-      if(phone_no_T_F){
+      if(phone_no_availibility){
         async function insertdb(){
         try {
             await pool.query("INSERT INTO users(email, username, phone_number, password_hash) VALUES($1,$2,$3,$4)",
             [user_email, user_username, user_phone_no, hash_pass]
             )
-        phone_no_T_F = false;
          res.json({massage: "data resived"});
         } catch (error) {
             if (error.code === '23505') {
@@ -205,25 +206,37 @@ app.post('/api/check_username', async (req, res)=>{
 app.post("/api/check_phone_no", async (req, res)=>{
     let phone_no = req.body.phone_no;
     console.log(`checking phonenumber in db ${phone_no}`)
+    
+    let phone_no_availibility = await check_phone_no(phone_no);
+
+    if (phone_no_availibility){
+        res.json({
+            phone_no: 'available'
+        })
+    }
+    else{
+        res.json({
+            phone_no: 'not_available'
+        })
+    }
+})
+
+async function check_phone_no(phone_no){
+
     try {
         let result = await pool.query("SELECT COUNT(*) FROM users WHERE phone_number = $1",
             [phone_no]
         )
         count = Number(result.rows[0].count);
-        if (count <= 3) {
-            res.json({
-                phone_no: "available"
-            })
-            phone_no_T_F = true;
+        if (count < 3) {
+            return true
         } else {
-            res.json({
-                phone_no: "not_available"
-            })
+            return false
         }
     } catch (error) {
         console.log(error)
     }
-})
+}
 
 app.use(express.static("Static"))
 
